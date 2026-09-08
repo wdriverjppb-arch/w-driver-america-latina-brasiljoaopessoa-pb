@@ -3,16 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>W-DRIVER - Mobilidade Urbana</title>
-    <meta name="description" content="Sistema Blindado Anti-Fraude e Anti-Calote da W-DRIVER: validação biométrica facial, antecedentes criminais, assinatura digital gov.br, botão W-SOS, radar dinâmico, gravação 360° no-show e W-BANK." />
-    <meta property="og:title" content="W-DRIVER - Mobilidade Urbana" />
-    <meta property="og:description" content="Sistema Blindado Anti-Fraude e Anti-Calote da W-DRIVER: validação biométrica facial, antecedentes criminais, assinatura digital gov.br, botão W-SOS, radar dinâmico, gravação 360° no-show e W-BANK." />
-    <meta property="og:type" content="website" />
+    <title>W-DRIVER - Mobilidade Urbana & Sistema Blindado</title>
+    <meta name="description" content="Sistema Blindado Anti-Fraude e Anti-Calote da W-DRIVER em João Pessoa - PB: validação biométrica facial, antecedentes criminais, assinatura digital gov.br, botão W-SOS, radar dinâmico, gravação 360° no-show e W-BANK." />
     <meta name="theme-color" content="#0a0a0a" />
     
     <!-- Ícone SVG Oficial W-DRIVER -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230d1705%22 stroke=%22%2384cc16%22 stroke-width=%225%22/><path d=%22M22 28 L35 76 L48 44 L60 76 L78 28 L64 28 L54 62 L43 32 L34 62 L28 28 Z%22 fill=%22%23a3e635%22/><path d=%22M32 76 Q50 35 78 28%22 stroke=%22%23ffffff%22 stroke-width=%224%22 stroke-dasharray=%224 4%22 fill=%22none%22/></svg>" />
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230d1705%22 stroke=%22%2384cc16%22 stroke-width=%225%22/><path d=%22M22 28 L35 76 L48 44 L60 76 L78 28 L64 28 L54 62 L43 32 L34 62 L28 28 Z%22 fill=%22%23a3e635%22/><path d=%22M32 76 Q50 35 78 28%22 stroke=%22%23ffffff%22 stroke-width=%224%22 stroke-dasharray=%224 4%22 fill=%22none%22/></svg>" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,22 +52,27 @@
         background: #171717;
         color: #fff;
         border: 1px solid #333;
-        border-radius: 12px;
+        border-radius: 14px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8);
       }
       .leaflet-popup-tip {
         background: #171717;
+      }
+      /* Estilo dark para o mapa OpenStreetMap livre */
+      .dark-tiles {
+        filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3);
       }
     </style>
   </head>
   <body class="bg-[#0a0a0a] text-neutral-100 antialiased selection:bg-lime-400 selection:text-black overflow-x-hidden">
 
-    <!-- Mapa Leaflet de Fundo -->
+    <!-- Mapa Leaflet com OpenStreetMap Gratuito -->
     <div id="map"></div>
 
-    <!-- Interface Superior / Cabeçalho -->
+    <!-- Interface Principal / Sistema W-DRIVER -->
     <div class="relative z-10 flex flex-col justify-between h-screen pointer-events-none p-4 md:p-6">
       
-      <!-- Topo: Logo e Status W-DRIVER -->
+      <!-- Topo: Header com Status e Botões de Controle -->
       <header class="flex items-center justify-between bg-neutral-900/90 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl pointer-events-auto shadow-2xl">
         <div class="flex items-center space-x-3">
           <div class="w-10 h-10 rounded-xl bg-neutral-950 border-2 border-lime-500 flex items-center justify-center shadow-lg shadow-lime-500/20">
@@ -82,56 +83,71 @@
             <p class="text-xs text-lime-400 font-medium">João Pessoa - PB • Sistema Blindado</p>
           </div>
         </div>
-        <div class="flex items-center space-x-2">
-          <span class="relative flex h-3 w-3">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-lime-500"></span>
-          </span>
-          <span class="text-xs font-semibold text-neutral-300 hidden sm:inline">Radar Ativo</span>
+        <div class="flex items-center space-x-3">
+          <button onclick="toggleSOS()" class="px-3 py-1.5 bg-red-500/10 border border-red-500/40 text-red-400 text-xs font-bold rounded-xl hover:bg-red-500/20 transition flex items-center space-x-1">
+            <span>🚨</span> <span class="hidden sm:inline">W-SOS</span>
+          </button>
+          <div class="flex items-center space-x-2 bg-neutral-950/80 px-3 py-1.5 rounded-xl border border-neutral-800">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-lime-500"></span>
+            </span>
+            <span class="text-xs font-semibold text-neutral-300">Radar Ativo</span>
+          </div>
         </div>
       </header>
 
-      <!-- Painel Inferior de Solicitação de Corrida / Módulos -->
+      <!-- Painel Central / Inferior com as Funções Completas -->
       <div class="bg-neutral-900/95 backdrop-blur-xl border border-neutral-800 p-5 rounded-3xl pointer-events-auto shadow-2xl max-w-lg mx-auto w-full space-y-4">
         
         <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
           <div>
-            <h2 class="font-bold text-base text-white">Escolha sua Categoria</h2>
-            <p class="text-xs text-neutral-400">Proteção biométrica e anti-calote ativada</p>
+            <h2 class="font-bold text-base text-white">Painel de Operação</h2>
+            <p class="text-xs text-neutral-400">Anti-Fraude, Biometria & W-Bank Integrado</p>
           </div>
           <span class="px-2.5 py-1 bg-lime-500/10 border border-lime-500/30 text-lime-400 text-xs font-bold rounded-full">Secure 360°</span>
         </div>
 
-        <!-- Opções de Serviços W -->
+        <!-- Categorias de Serviço -->
         <div class="grid grid-cols-4 gap-2 text-center">
-          <button class="p-3 rounded-2xl bg-lime-500 text-neutral-950 font-bold flex flex-col items-center justify-center space-y-1 shadow-lg shadow-lime-500/20 transition-transform active:scale-95">
+          <button onclick="selectCategory('W-CAR', this)" class="cat-btn p-3 rounded-2xl bg-lime-500 text-neutral-950 font-bold flex flex-col items-center justify-center space-y-1 shadow-lg shadow-lime-500/20 transition-transform active:scale-95">
             <span class="text-lg">🚗</span>
             <span class="text-[11px] tracking-tight">W-CAR</span>
           </button>
-          <button class="p-3 rounded-2xl bg-neutral-800 text-neutral-200 font-medium flex flex-col items-center justify-center space-y-1 hover:bg-neutral-700 transition">
+          <button onclick="selectCategory('W-MOTO', this)" class="cat-btn p-3 rounded-2xl bg-neutral-800 text-neutral-200 font-medium flex flex-col items-center justify-center space-y-1 hover:bg-neutral-700 transition">
             <span class="text-lg">🏍️</span>
             <span class="text-[11px] tracking-tight">W-MOTO</span>
           </button>
-          <button class="p-3 rounded-2xl bg-neutral-800 text-neutral-200 font-medium flex flex-col items-center justify-center space-y-1 hover:bg-neutral-700 transition">
+          <button onclick="selectCategory('W-BIKE', this)" class="cat-btn p-3 rounded-2xl bg-neutral-800 text-neutral-200 font-medium flex flex-col items-center justify-center space-y-1 hover:bg-neutral-700 transition">
             <span class="text-lg">🚲</span>
             <span class="text-[11px] tracking-tight">W-BIKE</span>
           </button>
-          <button class="p-3 rounded-2xl bg-neutral-800 text-neutral-200 font-medium flex flex-col items-center justify-center space-y-1 hover:bg-neutral-700 transition">
+          <button onclick="selectCategory('W-TAXI', this)" class="cat-btn p-3 rounded-2xl bg-neutral-800 text-neutral-200 font-medium flex flex-col items-center justify-center space-y-1 hover:bg-neutral-700 transition">
             <span class="text-lg">🚕</span>
             <span class="text-[11px] tracking-tight">W-TAXI</span>
           </button>
         </div>
 
-        <!-- Botão Principal de Ação -->
-        <button onclick="alert('W-DRIVER: Conectando aos motoristas blindados mais próximos em João Pessoa - PB.')" class="w-full py-4 bg-gradient-to-r from-lime-500 to-lime-400 text-neutral-950 font-extrabold rounded-2xl shadow-xl shadow-lime-500/30 hover:opacity-95 transition active:scale-95 text-center text-sm uppercase tracking-wider">
+        <!-- Ações do Sistema Blindado -->
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="runBiometry()" class="p-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded-2xl text-xs font-semibold flex items-center justify-center space-x-2 transition">
+            <span>📷</span> <span>Biometria Gov.br</span>
+          </button>
+          <button onclick="openWBank()" class="p-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded-2xl text-xs font-semibold flex items-center justify-center space-x-2 transition">
+            <span>💳</span> <span>W-BANK Carteira</span>
+          </button>
+        </div>
+
+        <!-- Botão Principal de Solicitação -->
+        <button onclick="solicitarCorrida()" class="w-full py-4 bg-gradient-to-r from-lime-500 to-lime-400 text-neutral-950 font-extrabold rounded-2xl shadow-xl shadow-lime-500/30 hover:opacity-95 transition active:scale-95 text-center text-sm uppercase tracking-wider">
           Solicitar W-Driver Blindado
         </button>
 
-        <!-- Rodapé do Card -->
-        <div class="flex items-center justify-between text-[11px] text-neutral-400 pt-1">
-          <span>🔒 Validação Gov.br</span>
-          <span>🛡️ W-SOS Ativo</span>
-          <span>💳 W-BANK</span>
+        <!-- Rodapé com Selos de Segurança -->
+        <div class="flex items-center justify-between text-[11px] text-neutral-400 pt-1 border-t border-neutral-800/60">
+          <span>🔒 Gov.br Verificado</span>
+          <span>🛡️ Gravação No-Show</span>
+          <span>⚡ Pix Anti-Calote</span>
         </div>
 
       </div>
@@ -141,28 +157,57 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-      // Inicializar mapa centralizado em João Pessoa - PB
+      // Inicializar Mapa centrado em João Pessoa - PB (OpenStreetMap sem API Key)
       const map = L.map('map', {
         zoomControl: false,
         attributionControl: false
       }).setView([-7.1195, -34.8450], 14);
 
-      // Adicionar camada de mapa escuro (CartoDB Dark Matter)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19
+      // Camada de Azulejos Gratuita com filtro Dark Mode aplicado via CSS
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        className: 'dark-tiles'
       }).addTo(map);
 
-      // Adicionar marcador customizado em João Pessoa
+      // Marcador da Base em João Pessoa
       const customIcon = L.divIcon({
         className: 'custom-div-icon',
-        html: "<div style='background-color:#84cc16; width:16px; height:16px; border-radius:50%; border:3px solid #000; box-shadow: 0 0 15px #84cc16;'></div>",
-        iconSize: [16, 16],
-        iconAnchor: [8, 8]
+        html: "<div style='background-color:#84cc16; width:18px; height:18px; border-radius:50%; border:3px solid #000; box-shadow: 0 0 20px #84cc16;'></div>",
+        iconSize: [18, 18],
+        iconAnchor: [9, 9]
       });
 
       L.marker([-7.1195, -34.8450], { icon: customIcon }).addTo(map)
-        .bindPopup("<b>W-DRIVER Base João Pessoa</b><br>Frota Blindada em Operação.")
+        .bindPopup("<div style='color: #000; font-weight: bold;'>W-DRIVER Base João Pessoa - PB</div>Frota blindada e radar anti-calote ativos.")
         .openPopup();
+
+      let categoriaAtual = 'W-CAR';
+
+      function selectCategory(cat, element) {
+        categoriaAtual = cat;
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+          btn.classList.remove('bg-lime-500', 'text-neutral-950', 'font-bold', 'shadow-lg', 'shadow-lime-500/20');
+          btn.classList.add('bg-neutral-800', 'text-neutral-200', 'font-medium');
+        });
+        element.classList.remove('bg-neutral-800', 'text-neutral-200', 'font-medium');
+        element.classList.add('bg-lime-500', 'text-neutral-950', 'font-bold', 'shadow-lg', 'shadow-lime-500/20');
+      }
+
+      function solicitarCorrida() {
+        alert(`W-DRIVER (${categoriaAtual}): Buscando motorista blindado mais próximo com validação biométrica facial em João Pessoa - PB.`);
+      }
+
+      function toggleSOS() {
+        alert('🚨 ALERTA W-SOS ATIVADO! Central de monitoramento 360° alertada e autoridades notificadas com sua geolocalização.');
+      }
+
+      function runBiometry() {
+        alert('📷 Validação Biométrica Facial e Assinatura Gov.br: Identidade confirmada com sucesso. Zero risco de fraudes.');
+      }
+
+      function openWBank() {
+        alert('💳 W-BANK: Saldo protegido, cashback de corrida e sistema anti-calote pré-pago ativados.');
+      }
     </script>
   </body>
 </html>
