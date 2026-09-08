@@ -2,8 +2,9 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>W-DRIVER - Sistema Blindado Completo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>W-DRIVER - João Pessoa</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * {
             margin: 0;
@@ -18,34 +19,6 @@
             color: #ffffff;
             overflow: hidden;
         }
-        /* Telas / Seções do Aplicativo */
-        .app-screen {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 20;
-            background: #121212;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 24px;
-            overflow-y: auto;
-        }
-        .app-screen.active {
-            display: flex;
-        }
-        #screen-map {
-            display: block; /* Tela principal com o mapa de fundo */
-            z-index: 10;
-            background: transparent;
-            padding: 0;
-            pointer-events: none; /* Permite interagir com o mapa por baixo */
-        }
-        #screen-map > * {
-            pointer-events: auto; /* Restaura clique nos painéis flutuantes */
-        }
         #map {
             width: 100%;
             height: 100%;
@@ -55,103 +28,59 @@
             z-index: 1;
         }
         
-        /* Estilos Comuns */
-        .card-box {
-            background: rgba(20, 20, 20, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(132, 204, 22, 0.3);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 15px;
-        }
-        .btn-primary {
-            width: 100%;
-            background-color: #84cc16;
-            color: #000000;
-            border: none;
-            border-radius: 12px;
-            padding: 15px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            margin-top: 12px;
-            box-shadow: 0 4px 15px rgba(132, 204, 22, 0.3);
-        }
-        .btn-secondary {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.08);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 14px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-        h1, h2 { color: #84cc16; }
-        p, li { font-size: 14px; color: #ccc; line-height: 1.5; }
-        
-        /* Tela de Boas-Vindas */
-        .welcome-hero {
-            text-align: center;
-            margin: auto 0;
-        }
-        .logo-badge {
-            width: 80px;
-            height: 80px;
-            background: #84cc16;
-            color: #000;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            font-weight: bold;
-            margin: 0 auto 20px auto;
-            box-shadow: 0 0 25px rgba(132, 204, 22, 0.5);
-        }
-
-        /* Painéis Flutuantes do Mapa */
+        /* Cabeçalho do App */
         .top-bar {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            right: 15px;
-            background: rgba(20, 20, 20, 0.9);
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(18, 18, 18, 0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(132, 204, 22, 0.3);
+            border: 1px solid rgba(132, 204, 22, 0.4);
             border-radius: 12px;
-            padding: 12px 16px;
-            z-index: 15;
+            padding: 10px 14px;
+            z-index: 10;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
         }
+        .menu-btn {
+            background: #84cc16;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* Painel Inferior Completo */
         .bottom-panel {
             position: absolute;
-            bottom: 15px;
-            left: 15px;
-            right: 15px;
-            background: rgba(20, 20, 20, 0.95);
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(18, 18, 18, 0.96);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(132, 204, 22, 0.3);
-            border-radius: 16px;
-            padding: 16px;
-            z-index: 15;
+            border: 1px solid rgba(132, 204, 22, 0.4);
+            border-radius: 14px;
+            padding: 14px;
+            z-index: 10;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.7);
         }
         .category-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin: 12px 0;
+            gap: 6px;
+            margin: 10px 0;
         }
         .category-card {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 10px 4px;
+            border-radius: 8px;
+            padding: 8px 2px;
             text-align: center;
             cursor: pointer;
         }
@@ -162,244 +91,228 @@
             font-weight: bold;
         }
         .price-tag {
-            font-size: 13px;
+            font-size: 11px;
             color: #84cc16;
             font-weight: bold;
+            margin-top: 2px;
         }
         .category-card.active .price-tag { color: #000000; }
         
-        /* Formulários e Inputs */
-        .form-group {
-            margin-bottom: 12px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: #84cc16;
-            margin-bottom: 4px;
-            font-weight: bold;
-        }
-        .form-group input {
+        .btn-action {
             width: 100%;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background-color: #84cc16;
+            color: #000000;
+            border: none;
             border-radius: 10px;
             padding: 12px;
-            color: #fff;
             font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        
+        .quick-links {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .link-pill {
+            flex: 1;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+        }
+        .link-pill:hover { border-color: #84cc16; color: #84cc16; }
+
+        /* Telas / Modais Internos */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .modal-box {
+            background: #1a1a1a;
+            border: 1px solid #84cc16;
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 380px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal-box h2 { color: #84cc16; margin-bottom: 10px; font-size: 17px; }
+        .modal-box p, .modal-box li { font-size: 13px; color: #ccc; margin-bottom: 8px; line-height: 1.4; }
+        .form-control {
+            width: 100%;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 10px;
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+        .btn-close {
+            background: #84cc16;
+            color: #000;
+            border: none;
+            width: 100%;
+            padding: 11px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 12px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <!-- 1. TELA DE BOAS-VINDAS -->
-    <div id="screen-welcome" class="app-screen active">
-        <div style="padding-top: 20px;">
-            <span style="font-size: 12px; color: #84cc16; font-weight: bold; text-transform: uppercase;">João Pessoa - Paraíba</span>
+    <!-- Cabeçalho -->
+    <div class="top-bar">
+        <button class="menu-btn" onclick="openModal('menuModal')">☰ Menu</button>
+        <div style="text-align: center;">
+            <strong style="color: #84cc16; font-size: 13px;">W-DRIVER</strong>
+            <div style="font-size: 10px; color: #aaa;">João Pessoa - PB</div>
         </div>
-        <div class="welcome-hero">
-            <div class="logo-badge">W</div>
-            <h1 style="font-size: 28px; margin-bottom: 10px;">W-DRIVER</h1>
-            <p style="font-size: 15px; color: #aaa; margin-bottom: 20px;">Plataforma de Mobilidade Urbana e Entregas com Sistema Blindado e Biometria.</p>
-            <div style="background: rgba(132, 204, 22, 0.1); border: 1px solid rgba(132, 204, 22, 0.3); border-radius: 12px; padding: 12px; font-size: 13px; color: #84cc16;">
-                🔒 Anti-Calote • CNH com EAR • Secure 360°
+        <div style="width: 8px; height: 8px; background-color: #84cc16; border-radius: 50%; box-shadow: 0 0 6px #84cc16;"></div>
+    </div>
+
+    <!-- Mapa -->
+    <div id="map"></div>
+
+    <!-- Painel de Solicitação na Tela Principal -->
+    <div class="bottom-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; font-weight: bold;">Escolha sua Categoria</div>
+            <div style="font-size: 9px; background: rgba(132,204,22,0.15); color: #84cc16; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(132,204,22,0.3);">Secure 360°</div>
+        </div>
+
+        <div class="category-grid">
+            <div class="category-card active" onclick="selectCategory('W-CAR', 'R$ 9,50', this)">
+                <div style="font-size: 14px;">🚗</div>
+                <div style="font-size: 10px;">W-CAR</div>
+                <div class="price-tag">R$ 9,50</div>
+            </div>
+            <div class="category-card" onclick="selectCategory('W-MOTO', 'R$ 6,00', this)">
+                <div style="font-size: 14px;">🏍️</div>
+                <div style="font-size: 10px;">W-MOTO</div>
+                <div class="price-tag">R$ 6,00</div>
+            </div>
+            <div class="category-card" onclick="selectCategory('W-BIKE', 'R$ 4,00', this)">
+                <div style="font-size: 14px;">🚲</div>
+                <div style="font-size: 10px;">W-BIKE</div>
+                <div class="price-tag">R$ 4,00</div>
+            </div>
+            <div class="category-card" onclick="selectCategory('W-TÁXI', 'R$ 11,00', this)">
+                <div style="font-size: 14px;">🚕</div>
+                <div style="font-size: 10px;">W-TÁXI</div>
+                <div class="price-tag">R$ 11,00</div>
             </div>
         </div>
-        <div>
-            <button class="btn-primary" onclick="goToScreen('screen-map')">Entrar no Sistema</button>
+
+        <button class="btn-action" id="btnAction" onclick="solicitarViagem()">
+            Solicitar W-CAR Blindado (R$ 9,50)
+        </button>
+
+        <div class="quick-links">
+            <div class="link-pill" onclick="openModal('bioModal')">📖 Biografia</div>
+            <div class="link-pill" onclick="openModal('passengerModal')">👤 Passageiro</div>
+            <div class="link-pill" onclick="openModal('driverModal')">🚗 Motorista</div>
+            <div class="link-pill" onclick="openModal('bankModal')">💳 W-BANK</div>
         </div>
     </div>
 
-    <!-- 2. TELA CENTRAL (MAPA COM CATEGORIAS E MENU COMPLETO) -->
-    <div id="screen-map" class="app-screen">
-        <div id="map"></div>
+    <!-- MODAIS DE CADA SEÇÃO -->
 
-        <!-- Cabeçalho Superior -->
-        <div class="top-bar">
-            <div>
-                <strong style="color: #84cc16; font-size: 15px;">W-DRIVER</strong>
-                <div style="font-size: 11px; color: #aaa;">João Pessoa - PB • Online</div>
-            </div>
-            <div style="display: flex; gap: 8px;">
-                <button onclick="goToScreen('screen-bank')" style="background: #84cc16; border: none; border-radius: 8px; padding: 6px 10px; font-size: 11px; font-weight: bold; cursor: pointer;">W-BANK</button>
-                <button onclick="goToScreen('screen-central')" style="background: rgba(255,255,255,0.1); border: 1px solid #84cc16; color: #84cc16; border-radius: 8px; padding: 6px 10px; font-size: 11px; font-weight: bold; cursor: pointer;">Central</button>
-            </div>
-        </div>
-
-        <!-- Painel Inferior de Solicitação -->
-        <div class="bottom-panel">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 13px; font-weight: bold;">Escolha sua Categoria</div>
-                <div style="font-size: 10px; background: rgba(132,204,22,0.15); color: #84cc16; padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(132,204,22,0.3);">Secure 360°</div>
-            </div>
-            
-            <div class="category-grid">
-                <div class="category-card active" onclick="selectCategory('W-CAR', 'R$ 9,50', this)">
-                    <div style="font-size: 16px;">🚗</div>
-                    <div style="font-size: 11px; margin-top: 2px;">W-CAR</div>
-                    <div class="price-tag">R$ 9,50</div>
-                </div>
-                <div class="category-card" onclick="selectCategory('W-MOTO', 'R$ 6,00', this)">
-                    <div style="font-size: 16px;">🏍️</div>
-                    <div style="font-size: 11px; margin-top: 2px;">W-MOTO</div>
-                    <div class="price-tag">R$ 6,00</div>
-                </div>
-                <div class="category-card" onclick="selectCategory('W-BIKE', 'R$ 4,00', this)">
-                    <div style="font-size: 16px;">🚲</div>
-                    <div style="font-size: 11px; margin-top: 2px;">W-BIKE</div>
-                    <div class="price-tag">R$ 4,00</div>
-                </div>
-                <div class="category-card" onclick="selectCategory('W-TÁXI', 'R$ 11,00', this)">
-                    <div style="font-size: 16px;">🚕</div>
-                    <div style="font-size: 11px; margin-top: 2px;">W-TÁXI</div>
-                    <div class="price-tag">R$ 11,00</div>
-                </div>
-            </div>
-
-            <button class="btn-primary" id="btnAction" onclick="alert('Solicitação registrada com sucesso em João Pessoa!')" style="margin-top: 4px;">
-                Solicitar W-CAR Blindado (R$ 9,50)
-            </button>
-
-            <div style="display: flex; gap: 8px; margin-top: 8px;">
-                <button class="btn-secondary" style="margin-top:0; font-size: 12px; padding: 10px;" onclick="goToScreen('screen-bio')">📖 Biografia</button>
-                <button class="btn-secondary" style="margin-top:0; font-size: 12px; padding: 10px;" onclick="goToScreen('screen-passenger')">👤 Passageiro</button>
-                <button class="btn-secondary" style="margin-top:0; font-size: 12px; padding: 10px;" onclick="goToScreen('screen-driver')">🚗 Motorista</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. TELA DE BIOGRAFIA & HISTÓRIA -->
-    <div id="screen-bio" class="app-screen">
-        <div>
-            <h2>Biografia & Origem</h2>
-            <p style="margin-top: 10px;">Fundada e gerenciada em João Pessoa - PB, a <strong>W-DRIVER</strong> atua desde 2009 na intermediação de mobilidade urbana e entregas com padrão de segurança reforçado.</p>
-            
-            <h2 style="margin-top: 16px;">Fundador & Gestão</h2>
-            <p style="margin-top: 5px;">Criado por <strong>Diego Wallace de Lima Vasconcelos</strong>, o ecossistema nasceu com o compromisso de unir tecnologia avançada, rigor na validação de cadastros e proteção total para passageiros e condutores na Paraíba.</p>
-
-            <h2 style="margin-top: 16px;">Pilares do Sistema</h2>
-            <ul style="padding-left: 18px; margin-top: 5px;">
-                <li><strong>Validação Rigorosa:</strong> CNH com EAR e antecedentes criminais limpos.</li>
-                <li><strong>Secure 360°:</strong> Protocolos avançados contra fraudes e cancelamentos.</li>
-                <li><strong>Frota Ampla:</strong> Bicicletas, motos, carros e táxis integrados.</li>
-            </ul>
-        </div>
-        <div>
-            <button class="btn-primary" onclick="goToScreen('screen-map')">Voltar ao Mapa Central</button>
-        </div>
-    </div>
-
-    <!-- 4. TELA DE CADASTRO DE PASSAGEIRO -->
-    <div id="screen-passenger" class="app-screen">
-        <div>
-            <h2>Cadastro de Passageiro</h2>
-            <p style="margin-bottom: 15px; font-size: 13px;">Preencha seus dados para acessar o transporte blindado.</p>
-            
-            <div class="form-group">
-                <label>Nome Completo</label>
-                <input type="text" placeholder="Seu nome completo">
-            </div>
-            <div class="form-group">
-                <label>WhatsApp / Telefone</label>
-                <input type="text" placeholder="(83) 90000-0000">
-            </div>
-            <div class="form-group">
-                <label>E-mail</label>
-                <input type="email" placeholder="seu@email.com">
-            </div>
-        </div>
-        <div>
-            <button class="btn-primary" onclick="alert('Cadastro de Passageiro realizado com sucesso!'); goToScreen('screen-map');">Cadastrar Passageiro</button>
-            <button class="btn-secondary" onclick="goToScreen('screen-map')">Voltar</button>
-        </div>
-    </div>
-
-    <!-- 5. TELA DE CADASTRO DE MOTORISTA -->
-    <div id="screen-driver" class="app-screen" style="overflow-y: auto;">
-        <div>
-            <h2>Cadastro de Motorista</h2>
-            <p style="margin-bottom: 15px; font-size: 13px;">Requisitos: CNH com EAR, antecedentes limpos e validação 360°.</p>
-            
-            <div class="form-group">
-                <label>Nome Completo</label>
-                <input type="text" placeholder="Nome do motorista">
-            </div>
-            <div class="form-group">
-                <label>Categoria de Atuação</label>
-                <input type="text" placeholder="W-CAR / W-MOTO / W-TÁXI">
-            </div>
-            <div class="form-group">
-                <label>Número da CNH (com EAR)</label>
-                <input type="text" placeholder="Registro CNH">
-            </div>
-            <div class="form-group">
-                <label>Certidão de Antecedentes</label>
-                <input type="text" placeholder="Link ou status do documento">
-            </div>
-        </div>
-        <div style="margin-top: 15px;">
-            <button class="btn-primary" onclick="alert('Documentação enviada para análise da Central!'); goToScreen('screen-map');">Enviar para Análise</button>
-            <button class="btn-secondary" onclick="goToScreen('screen-map')">Voltar</button>
-        </div>
-    </div>
-
-    <!-- 6. TELA DO BANCO W-BANK -->
-    <div id="screen-bank" class="app-screen">
-        <div>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <span style="font-size: 11px; color: #84cc16; font-weight: bold; letter-spacing: 1px;">CARTEIRA DIGITAL</span>
-                <h1 style="font-size: 26px; color: #fff;">W-BANK</h1>
-            </div>
-            
-            <div class="card-box" style="text-align: center; background: rgba(132,204,22,0.05); border-color: #84cc16;">
-                <div style="font-size: 12px; color: #aaa;">Saldo Disponível</div>
-                <div style="font-size: 28px; font-weight: bold; color: #84cc16; margin: 5px 0;">R$ 1.250,00</div>
-                <div style="font-size: 11px; color: #888;">João Pessoa - PB • Conta Verificada</div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                <button class="btn-secondary" onclick="alert('Função PIX iniciada com segurança.')" style="margin-top:0;">⚡ PIX Rápido</button>
-                <button class="btn-secondary" onclick="alert('Extrato atualizado.')" style="margin-top:0;">📊 Extrato</button>
-            </div>
-            
-            <p style="font-size: 12px; color: #888; text-align: center;">Gerenciamento financeiro integrado para motoristas e passageiros W-DRIVER.</p>
-        </div>
-        <div>
-            <button class="btn-primary" onclick="goToScreen('screen-map')">Voltar ao Mapa</button>
-        </div>
-    </div>
-
-    <!-- 7. TELA DA CENTRAL -->
-    <div id="screen-central" class="app-screen">
-        <div>
+    <!-- Menu Principal / Central -->
+    <div class="modal-overlay" id="menuModal">
+        <div class="modal-box">
             <h2>Central W-DRIVER</h2>
-            <p style="margin-bottom: 15px; font-size: 13px;">Painel de controle e suporte operacional de João Pessoa.</p>
-            
-            <div class="card-box">
-                <strong style="color: #84cc16; font-size: 14px;">Status da Operação</strong>
-                <p style="margin-top: 5px; font-size: 13px;">🟢 Servidores Online em João Pessoa - PB</p>
-                <p style="font-size: 13px;">🔒 Criptografia e Blindagem Ativas</p>
+            <p>🟢 Servidores Online em João Pessoa - PB</p>
+            <p>🔒 Sistema Blindado e Biometria Ativos</p>
+            <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
+                <button class="link-pill" style="padding: 10px; font-size: 13px;" onclick="closeModal('menuModal'); openModal('bioModal');">📖 Biografia e História</button>
+                <button class="link-pill" style="padding: 10px; font-size: 13px;" onclick="closeModal('menuModal'); openModal('passengerModal');">👤 Cadastro de Passageiro</button>
+                <button class="link-pill" style="padding: 10px; font-size: 13px;" onclick="closeModal('menuModal'); openModal('driverModal');">🚗 Cadastro de Motorista</button>
+                <button class="link-pill" style="padding: 10px; font-size: 13px;" onclick="closeModal('menuModal'); openModal('bankModal');">💳 Acessar W-BANK</button>
             </div>
-
-            <div class="card-box">
-                <strong style="color: #84cc16; font-size: 14px;">Suporte Operacional</strong>
-                <p style="margin-top: 5px; font-size: 13px;">Atendimento 24h para condutores e passageiros cadastrados no ecossistema.</p>
-            </div>
-        </div>
-        <div>
-            <button class="btn-primary" onclick="goToScreen('screen-map')">Voltar ao Início / Mapa</button>
+            <button class="btn-close" onclick="closeModal('menuModal')">Fechar Menu</button>
         </div>
     </div>
 
-    <!-- Script de Navegação e Google Maps -->
+    <!-- Biografia -->
+    <div class="modal-overlay" id="bioModal">
+        <div class="modal-box">
+            <h2>Biografia & Origem</h2>
+            <p>Fundada e gerenciada em João Pessoa - PB, a <strong>W-DRIVER</strong> atua desde 2009 na intermediação de mobilidade urbana e entregas com padrão de segurança reforçado.</p>
+            <h2 style="margin-top: 12px;">Fundador & Gestão</h2>
+            <p>Criado por <strong>Diego Wallace de Lima Vasconcelos</strong>, o ecossistema une tecnologia avançada, rigor na validação de cadastros e proteção total para passageiros e condutores na Paraíba.</p>
+            <button class="btn-close" onclick="closeModal('bioModal')">Voltar</button>
+        </div>
+    </div>
+
+    <!-- Passageiro -->
+    <div class="modal-overlay" id="passengerModal">
+        <div class="modal-box">
+            <h2>Cadastro de Passageiro</h2>
+            <input type="text" class="form-control" placeholder="Nome Completo">
+            <input type="text" class="form-control" placeholder="WhatsApp / Telefone">
+            <button class="btn-close" onclick="alert('Cadastro de Passageiro realizado com sucesso!'); closeModal('passengerModal');">Salvar Cadastro</button>
+            <button style="background:none; border:none; color:#aaa; width:100%; margin-top:8px; cursor:pointer;" onclick="closeModal('passengerModal')">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Motorista -->
+    <div class="modal-overlay" id="driverModal">
+        <div class="modal-box">
+            <h2>Cadastro de Motorista</h2>
+            <p style="margin-bottom: 8px; font-size: 12px; color: #84cc16;">Exigido CNH com EAR e checagem 360°.</p>
+            <input type="text" class="form-control" placeholder="Nome Completo">
+            <input type="text" class="form-control" placeholder="Categoria (W-CAR / W-MOTO / W-TÁXI)">
+            <input type="text" class="form-control" placeholder="Número da CNH (com EAR)">
+            <button class="btn-close" onclick="alert('Documentação enviada para análise da Central!'); closeModal('driverModal');">Enviar para Análise</button>
+            <button style="background:none; border:none; color:#aaa; width:100%; margin-top:8px; cursor:pointer;" onclick="closeModal('driverModal')">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- W-BANK -->
+    <div class="modal-overlay" id="bankModal">
+        <div class="modal-box" style="text-align: center;">
+            <span style="font-size: 11px; color: #84cc16; font-weight: bold;">CARTEIRA DIGITAL</span>
+            <h2>W-BANK</h2>
+            <div style="background: rgba(132,204,22,0.1); border: 1px solid #84cc16; border-radius: 12px; padding: 15px; margin: 15px 0;">
+                <div style="font-size: 11px; color: #aaa;">Saldo Disponível</div>
+                <div style="font-size: 24px; font-weight: bold; color: #84cc16; margin-top: 5px;">R$ 1.250,00</div>
+            </div>
+            <button class="btn-close" onclick="closeModal('bankModal')">Fechar W-BANK</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Função para alternar entre as telas do aplicativo
-        function goToScreen(screenId) {
-            document.querySelectorAll('.app-screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-        }
+        // Inicialização limpa do mapa em João Pessoa
+        const map = L.map('map', { zoomControl: false }).setView([-7.1195, -34.8450], 14);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap & CARTO',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        L.marker([-7.1195, -34.8450]).addTo(map)
+            .bindPopup('<b>W-DRIVER Base João Pessoa</b>');
 
         let categoriaAtual = 'W-CAR';
         let valorAtual = 'R$ 9,50';
@@ -412,40 +325,17 @@
             document.getElementById('btnAction').innerText = `Solicitar ${cat} Blindado (${val})`;
         }
 
-        // Inicialização do Google Maps
-        function initMap() {
-            const joaoPessoa = { lat: -7.1195, lng: -34.8450 };
+        function solicitarViagem() {
+            alert(`W-DRIVER: Solicitação para ${categoriaAtual} (${valorAtual}) registrada com sucesso em João Pessoa - PB. Buscando motorista blindado mais próximo!`);
+        }
 
-            const darkMapStyle = [
-                { elementType: "geometry", stylers: [{ color: "#212121" }] },
-                { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
-                { elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
-                { elementType: "labels.text.stroke", stylers: [{ color: "#212121" }] },
-                { featureType: "administrative", elementType: "geometry", stylers: [{ color: "#757575" }] },
-                { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#3b3b3b" }] },
-                { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
-                { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#181818" }] },
-                { featureType: "road", elementType: "geometry", stylers: [{ color: "#2c2c2c" }] },
-                { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#3c3c3c" }] },
-                { featureType: "water", elementType: "geometry", stylers: [{ color: "#000000" }] }
-            ];
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
 
-            const map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 14,
-                center: joaoPessoa,
-                styles: darkMapStyle,
-                disableDefaultUI: true
-            });
-
-            new google.maps.Marker({
-                position: joaoPessoa,
-                map: map,
-                title: "W-DRIVER Base João Pessoa"
-            });
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
         }
     </script>
-
-    <!-- Script oficial do Google Maps com a chave integrada -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBatyiM_-wQEGovCbiYA8irKoxJin3VJrA&callback=initMap" async defer></script>
 </body>
 </html>
