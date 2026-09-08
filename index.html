@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>W-DRIVER - João Pessoa</title>
+    <title>W-DRIVER - América Latina Brasil João Pessoa-PB</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * {
@@ -105,7 +105,7 @@
             border: none;
             border-radius: 10px;
             padding: 12px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             text-transform: uppercase;
@@ -121,9 +121,9 @@
             background: rgba(255,255,255,0.07);
             border: 1px solid rgba(255,255,255,0.15);
             color: #fff;
-            padding: 8px 4px;
+            padding: 8px 2px;
             border-radius: 8px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             text-align: center;
             cursor: pointer;
@@ -147,12 +147,14 @@
             border-radius: 16px;
             padding: 20px;
             width: 100%;
-            max-width: 380px;
+            max-width: 420px;
             max-height: 85vh;
             overflow-y: auto;
         }
         .modal-box h2 { color: #84cc16; margin-bottom: 10px; font-size: 17px; }
+        .modal-box h3 { color: #84cc16; margin: 12px 0 6px 0; font-size: 14px; }
         .modal-box p, .modal-box li { font-size: 13px; color: #ccc; margin-bottom: 8px; line-height: 1.4; }
+        .modal-box ul { padding-left: 15px; }
         .form-control {
             width: 100%;
             background: rgba(255,255,255,0.07);
@@ -174,6 +176,14 @@
             margin-top: 12px;
             cursor: pointer;
         }
+        .price-table-item {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+        .price-table-item strong { color: #84cc16; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -182,8 +192,8 @@
     <div class="top-bar">
         <button class="menu-btn" onclick="openModal('menuModal')">☰ Menu</button>
         <div style="text-align: center;">
-            <strong style="color: #84cc16; font-size: 13px;">W-DRIVER</strong>
-            <div style="font-size: 10px; color: #aaa;">João Pessoa - PB</div>
+            <strong style="color: #84cc16; font-size: 12px;">W-DRIVER AMÉRICA LATINA</strong>
+            <div style="font-size: 9px; color: #aaa;">João Pessoa - PB</div>
         </div>
         <div style="width: 8px; height: 8px; background-color: #84cc16; border-radius: 50%; box-shadow: 0 0 6px #84cc16;"></div>
     </div>
@@ -194,39 +204,40 @@
     <!-- Painel de Solicitação na Tela Principal -->
     <div class="bottom-panel">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="font-size: 12px; font-weight: bold;">Escolha sua Categoria</div>
-            <div style="font-size: 9px; background: rgba(132,204,22,0.15); color: #84cc16; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(132,204,22,0.3);">Secure 360°</div>
+            <div style="font-size: 12px; font-weight: bold;" id="selectedCategoryTitle">W-CARRO (Comum)</div>
+            <div style="font-size: 9px; background: rgba(132,204,22,0.15); color: #84cc16; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(132,204,22,0.3);">Tarifa Justa</div>
         </div>
 
         <div class="category-grid">
-            <div class="category-card active" onclick="selectCategory('W-CAR', 'R$ 9,50', this)">
-                <div style="font-size: 14px;">🚗</div>
-                <div style="font-size: 10px;">W-CAR</div>
-                <div class="price-tag">R$ 9,50</div>
-            </div>
-            <div class="category-card" onclick="selectCategory('W-MOTO', 'R$ 6,00', this)">
-                <div style="font-size: 14px;">🏍️</div>
-                <div style="font-size: 10px;">W-MOTO</div>
-                <div class="price-tag">R$ 6,00</div>
-            </div>
-            <div class="category-card" onclick="selectCategory('W-BIKE', 'R$ 4,00', this)">
+            <div class="category-card" onclick="selectCategory('W-BIKE', 'R$ 6,00', 'W-BIKE (Até 4km)', this)">
                 <div style="font-size: 14px;">🚲</div>
                 <div style="font-size: 10px;">W-BIKE</div>
-                <div class="price-tag">R$ 4,00</div>
+                <div class="price-tag">R$ 6,00</div>
             </div>
-            <div class="category-card" onclick="selectCategory('W-TÁXI', 'R$ 11,00', this)">
+            <div class="category-card" onclick="selectCategory('W-MOTO', 'R$ 6,00', 'W-MOTO Comum', this)">
+                <div style="font-size: 14px;">🏍️</div>
+                <div style="font-size: 10px;">MOTO</div>
+                <div class="price-tag">R$ 6,00</div>
+            </div>
+            <div class="category-card active" onclick="selectCategory('W-CARRO', 'R$ 8,00', 'W-CARRO Comum', this)">
+                <div style="font-size: 14px;">🚗</div>
+                <div style="font-size: 10px;">CARRO</div>
+                <div class="price-tag">R$ 8,00</div>
+            </div>
+            <div class="category-card" onclick="selectCategory('W-TÁXI', 'R$ 10,00', 'W-Táxi / Luxo', this)">
                 <div style="font-size: 14px;">🚕</div>
-                <div style="font-size: 10px;">W-TÁXI</div>
-                <div class="price-tag">R$ 11,00</div>
+                <div style="font-size: 10px;">TÁXI</div>
+                <div class="price-tag">R$ 10,00</div>
             </div>
         </div>
 
         <button class="btn-action" id="btnAction" onclick="solicitarViagem()">
-            Solicitar W-CAR Blindado (R$ 9,50)
+            Solicitar W-CARRO Comum (R$ 8,00)
         </button>
 
         <div class="quick-links">
             <div class="link-pill" onclick="openModal('bioModal')">📖 Biografia</div>
+            <div class="link-pill" onclick="openModal('pricesModal')">📋 Preços</div>
             <div class="link-pill" onclick="openModal('passengerModal')">👤 Passageiro</div>
             <div class="link-pill" onclick="openModal('driverModal')">🚗 Motorista</div>
             <div class="link-pill" onclick="openModal('bankModal')">💳 W-BANK</div>
@@ -238,27 +249,93 @@
     <!-- Menu Principal / Central -->
     <div class="modal-overlay" id="menuModal">
         <div class="modal-box">
-            <h2>Central W-DRIVER</h2>
-            <p>🟢 Servidores Online em João Pessoa - PB</p>
-            <p>🔒 Sistema Blindado e Biometria Ativos</p>
+            <h2>W-DRIVER - J. PESSOA</h2>
+            <p><em>"Quem escolhe preço corre riscos. Quem escolhe a W-DRIVER escolhe chegar bem!"</em></p>
             <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px;">
-                <button class="link-pill" style="padding: 10px; font-size: 13px;" onclick="closeModal('menuModal'); openModal('bioModal');">📖 Biografia e História</button>
-                <button class="link-pill" style="padding: 10px; font-size: 13px;" onclick="closeModal('menuModal'); openModal('passengerModal');">👤 Cadastro de Passageiro</button>
-                <button class="link-pill" style="padding: 10px; font-size: 13px;" onclick="closeModal('menuModal'); openModal('driverModal');">🚗 Cadastro de Motorista</button>
-                <button class="link-pill" style="padding: 10px; font-size: 13px;" onclick="closeModal('menuModal'); openModal('bankModal');">💳 Acessar W-BANK</button>
+                <button class="link-pill" style="padding: 10px; font-size: 12px;" onclick="closeModal('menuModal'); openModal('bioModal');">📖 Biografia Oficial e História</button>
+                <button class="link-pill" style="padding: 10px; font-size: 12px;" onclick="closeModal('menuModal'); openModal('pricesModal');">📋 Tabela Oficial de Preços</button>
+                <button class="link-pill" style="padding: 10px; font-size: 12px;" onclick="closeModal('menuModal'); openModal('passengerModal');">👤 Cadastro de Passageiro</button>
+                <button class="link-pill" style="padding: 10px; font-size: 12px;" onclick="closeModal('menuModal'); openModal('driverModal');">🚗 Cadastro de Motorista</button>
+                <button class="link-pill" style="padding: 10px; font-size: 12px;" onclick="closeModal('menuModal'); openModal('bankModal');">💳 Acessar W-BANK</button>
             </div>
             <button class="btn-close" onclick="closeModal('menuModal')">Fechar Menu</button>
         </div>
     </div>
 
-    <!-- Biografia -->
+    <!-- Biografia Completa -->
     <div class="modal-overlay" id="bioModal">
         <div class="modal-box">
-            <h2>Biografia & Origem</h2>
-            <p>Fundada e gerenciada em João Pessoa - PB, a <strong>W-DRIVER</strong> atua desde 2009 na intermediação de mobilidade urbana e entregas com padrão de segurança reforçado.</p>
-            <h2 style="margin-top: 12px;">Fundador & Gestão</h2>
-            <p>Criado por <strong>Diego Wallace de Lima Vasconcelos</strong>, o ecossistema une tecnologia avançada, rigor na validação de cadastros e proteção total para passageiros e condutores na Paraíba.</p>
+            <h2>Biografia Oficial Completa</h2>
+            <p><strong>A História por Trás da W-DRIVER AMÉRICA LATINA BRASIL JOÃO PESSOA-PB: Da Dor da Rejeição à Liderança com Propósito</strong></p>
+            <p>A história da W-DRIVER não nasceu em um escritório de tecnologia ou em um berço de ouro. Ela começou na dor, no trânsito, na fé e no legado de uma família que ensinou o verdadeiro valor do trabalho, da honestidade e do amor.</p>
+            
+            <h3>Origens e Identidade</h3>
+            <p>Natural de João Pessoa, Paraíba, nascido e criado no Bairro da Torre — na Rua José Severino Massa Spinelli, 836, local onde a empresa está oficialmente registrada —, Wollace traz no DNA a essência de sua terra. A marca carrega a assinatura e a alma de seu criador: o "W" vem de Wollace (pronúncia britânica ensinada por sua mãe) e "Driver" significa motorista.</p>
+            
+            <h3>Raízes e Família</h3>
+            <p>Sua base moral veio de seus avós maternos, Vovó Gil (Giselda) e Vovô Vasco (professor de Braille, francês e músico, vizinho de Livardo Alves na Torre). Sua mãe, Jandacira Geusa de Lima Vasconcelos, trabalhou por 17 anos e hoje se dedica com amor na AeC Mangabeira. Do lado paterno, recebe as orações e o carinho de sua avó Vovó Zezé e do Vovô Roberto.</p>
+            
+            <h3>A Jornada no Transporte</h3>
+            <p>Em 2009, iniciou no transporte legal com CNH EAR, passando por supermercado e táxi. Ao migrar para aplicativos tradicionais, sentiu na pele as jornadas exaustivas e repasses abusivos. Casado há mais de duas décadas com a missionária Gilmara Vasconcelos, pai de cinco filhos e pastor ordenado em 2012, transformou a dor em um propósito de amor, valorização do trabalhador e tarifas justas.</p>
+            
             <button class="btn-close" onclick="closeModal('bioModal')">Voltar</button>
+        </div>
+    </div>
+
+    <!-- Tabela Oficial de Preços -->
+    <div class="modal-overlay" id="pricesModal">
+        <div class="modal-box">
+            <h2>Tabela Oficial de Preços</h2>
+            
+            <div class="price-table-item">
+                <strong>1. W-BIKE</strong>
+                <p>Mobilidade sustentável e entregas rápidas.</p>
+                <p>Taxa fixa: R$ 6,00 (até 4 km) | Adicional: R$ 0,90 / km</p>
+            </div>
+
+            <div class="price-table-item">
+                <strong>2. W-MOTO (Comum)</strong>
+                <p>Transporte ágil e entregas expressas.</p>
+                <p>Taxa fixa: R$ 6,00 (até 4 km) | Adicional: R$ 1,00 / km</p>
+            </div>
+
+            <div class="price-table-item">
+                <strong>3. W-MOTO (Prime)</strong>
+                <p>Motocicletas de categoria superior.</p>
+                <p>Taxa fixa: R$ 6,00 (até 4 km) | Adicional: R$ 1,30 / km</p>
+            </div>
+
+            <div class="price-table-item">
+                <strong>4. W-CARRO (Comum)</strong>
+                <p>Transporte urbano utilizando carros usados.</p>
+                <p>Taxa fixa: R$ 8,00 (até 4 km) | Adicional: R$ 1,75 / km</p>
+            </div>
+
+            <div class="price-table-item">
+                <strong>5. W-CARRO (Prime)</strong>
+                <p>Transporte utilizando carros seminovos.</p>
+                <p>Taxa fixa: R$ 8,00 (até 4 km) | Adicional: R$ 2,00 / km</p>
+            </div>
+
+            <div class="price-table-item">
+                <strong>6. W-CARRO EXECUTIVO</strong>
+                <p>Veículos novos / até 3 anos, 7 lugares, maior conforto.</p>
+                <p>Taxa fixa: R$ 12,00 (até 4 km) | Adicional: R$ 3,00 / km</p>
+            </div>
+
+            <div class="price-table-item">
+                <strong>7. W-TÁXI</strong>
+                <p>Integração oficial com táxi tradicional.</p>
+                <p>Viagens até 1 km: R$ 10,00 fixos. Demais via taxímetro Inmetro.</p>
+            </div>
+
+            <div class="price-table-item">
+                <strong>8. W-LUXO</strong>
+                <p>Passeios turísticos (litoral norte/sul), viagens estaduais e interestaduais (Caminhonetes 7 lugares, Trailblazer, SW4, Pajero Full).</p>
+                <p>Disponível exclusivamente por contrato.</p>
+            </div>
+
+            <button class="btn-close" onclick="closeModal('pricesModal')">Fechar Preços</button>
         </div>
     </div>
 
@@ -277,9 +354,9 @@
     <div class="modal-overlay" id="driverModal">
         <div class="modal-box">
             <h2>Cadastro de Motorista</h2>
-            <p style="margin-bottom: 8px; font-size: 12px; color: #84cc16;">Exigido CNH com EAR e checagem 360°.</p>
+            <p style="margin-bottom: 8px; font-size: 12px; color: #84cc16;">Exigido CNH com EAR e rigor na segurança.</p>
             <input type="text" class="form-control" placeholder="Nome Completo">
-            <input type="text" class="form-control" placeholder="Categoria (W-CAR / W-MOTO / W-TÁXI)">
+            <input type="text" class="form-control" placeholder="Categoria (W-BIKE / MOTO / CARRO / TÁXI)">
             <input type="text" class="form-control" placeholder="Número da CNH (com EAR)">
             <button class="btn-close" onclick="alert('Documentação enviada para análise da Central!'); closeModal('driverModal');">Enviar para Análise</button>
             <button style="background:none; border:none; color:#aaa; width:100%; margin-top:8px; cursor:pointer;" onclick="closeModal('driverModal')">Cancelar</button>
@@ -302,7 +379,7 @@
     <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Inicialização limpa do mapa em João Pessoa
+        // Inicialização do mapa em João Pessoa - PB
         const map = L.map('map', { zoomControl: false }).setView([-7.1195, -34.8450], 14);
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
@@ -312,21 +389,24 @@
         }).addTo(map);
 
         L.marker([-7.1195, -34.8450]).addTo(map)
-            .bindPopup('<b>W-DRIVER Base João Pessoa</b>');
+            .bindPopup('<b>W-DRIVER Base João Pessoa</b><br>Rua José Severino Massa Spinelli, 836 - Torre');
 
-        let categoriaAtual = 'W-CAR';
-        let valorAtual = 'R$ 9,50';
+        let categoriaAtual = 'W-CARRO';
+        let valorAtual = 'R$ 8,00';
+        let nomeCategoria = 'W-CARRO Comum';
 
-        function selectCategory(cat, val, element) {
+        function selectCategory(cat, val, label, element) {
             document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
             element.classList.add('active');
             categoriaAtual = cat;
             valorAtual = val;
-            document.getElementById('btnAction').innerText = `Solicitar ${cat} Blindado (${val})`;
+            nomeCategoria = label;
+            document.getElementById('selectedCategoryTitle').innerText = label;
+            document.getElementById('btnAction').innerText = `Solicitar ${label} (${val})`;
         }
 
         function solicitarViagem() {
-            alert(`W-DRIVER: Solicitação para ${categoriaAtual} (${valorAtual}) registrada com sucesso em João Pessoa - PB. Buscando motorista blindado mais próximo!`);
+            alert(`W-DRIVER AMÉRICA LATINA: Solicitação para ${nomeCategoria} (${valorAtual}) registrada com sucesso em João Pessoa - PB. "Quem escolhe a W-DRIVER escolhe chegar bem!"`);
         }
 
         function openModal(id) {
