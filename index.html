@@ -1,367 +1,52 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>W-DRIVER — Sistema Completo</title>
-    <!-- Leaflet CSS para o Mapa -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!doctype html>
+<html lang="pt-BR" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>W-DRIVER - Mobilidade Urbana</title>
+    <meta name="description" content="Sistema Blindado Anti-Fraude e Anti-Calote da W-DRIVER: validação biométrica facial, antecedentes criminais, assinatura digital gov.br, botão W-SOS, radar dinâmico, gravação 360° no-show e W-BANK." />
+    <meta property="og:title" content="W-DRIVER - Mobilidade Urbana" />
+    <meta property="og:description" content="Sistema Blindado Anti-Fraude e Anti-Calote da W-DRIVER: validação biométrica facial, antecedentes criminais, assinatura digital gov.br, botão W-SOS, radar dinâmico, gravação 360° no-show e W-BANK." />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#0a0a0a" />
+    
+    <!-- Ícone SVG Oficial W-DRIVER -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230d1705%22 stroke=%22%2384cc16%22 stroke-width=%225%22/><path d=%22M22 28 L35 76 L48 44 L60 76 L78 28 L64 28 L54 62 L43 32 L34 62 L28 28 Z%22 fill=%22%23a3e635%22/><path d=%22M32 76 Q50 35 78 28%22 stroke=%22%23ffffff%22 stroke-width=%224%22 stroke-dasharray=%224 4%22 fill=%22none%22/></svg>" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230d1705%22 stroke=%22%2384cc16%22 stroke-width=%225%22/><path d=%22M22 28 L35 76 L48 44 L60 76 L78 28 L64 28 L54 62 L43 32 L34 62 L28 28 Z%22 fill=%22%23a3e635%22/><path d=%22M32 76 Q50 35 78 28%22 stroke=%22%23ffffff%22 stroke-width=%224%22 stroke-dasharray=%224 4%22 fill=%22none%22/></svg>" />
+
+    <!-- Fontes do Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS (OpenStreetMap gratuito) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <style>
-        :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --primary: #a3ff33; /* Verde Pera 🍐 */
-            --primary-hover: #8ee622;
-            --text-color: #ffffff;
-            --text-muted: #aaaaaa;
-            --danger: #ff4d4d;
-            --warning: #ffaa00;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            height: 100vh;
-            max-height: 850px;
-            background: var(--card-bg);
-            border: 2px solid var(--primary);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 0 15px rgba(163, 255, 51, 0.2);
-        }
-
-        .screen {
-            display: none;
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-        }
-
-        .screen.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Top Bar / Header */
-        .top-bar {
-            background: #181818;
-            padding: 12px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .top-bar h2 {
-            color: var(--primary);
-            font-size: 14px;
-            text-align: center;
-            flex: 1;
-        }
-
-        .menu-btn {
-            background: var(--primary);
-            color: #000;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 11px;
-            cursor: pointer;
-        }
-
-        /* Mapa */
-        #map {
-            flex: 1;
-            width: 100%;
-            min-height: 350px;
-        }
-
-        /* Rodapé de Categorias / Ações */
-        .bottom-panel {
-            background: #181818;
-            border-top: 1px solid #333;
-            padding: 12px;
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            margin-bottom: 10px;
-        }
-
-        .cat-btn {
-            background: #252525;
-            border: 1px solid #444;
-            border-radius: 6px;
-            padding: 8px 4px;
-            text-align: center;
-            color: #fff;
-            cursor: pointer;
-            font-size: 10px;
-        }
-
-        .cat-btn.active {
-            border-color: var(--primary);
-            background: rgba(163, 255, 51, 0.15);
-            color: var(--primary);
-        }
-
-        .cat-btn span {
-            display: block;
-            font-weight: bold;
-            font-size: 11px;
-            margin-top: 2px;
-        }
-
-        /* Navegação Inferior (Abas) */
-        .nav-tabs {
-            display: flex;
-            justify-content: space-around;
-            background: #111;
-            padding: 8px 4px;
-            border-top: 1px solid #222;
-        }
-
-        .nav-tab {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 10px;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .nav-tab.active {
-            color: var(--primary);
-            font-weight: bold;
-        }
-
-        /* Botões Gerais */
-        .btn {
-            width: 100%;
-            background-color: var(--primary);
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 13px;
-            cursor: pointer;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .btn-secondary {
-            background-color: #333;
-            color: var(--text-color);
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-            text-transform: uppercase;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 13px;
-        }
-
-        .bio-box {
-            background: #151515;
-            border: 1px solid #333;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            line-height: 1.5;
-            margin-bottom: 15px;
-            color: #ddd;
-            max-height: 180px;
-            overflow-y: auto;
-        }
+      html, body, #root {
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        position: fixed;
+        background-color: #0a0a0a;
+      }
+      .leaflet-container {
+        font-family: inherit;
+      }
+      .leaflet-popup-content-wrapper {
+        background: #171717;
+        color: #fff;
+        border: 1px solid #333;
+        border-radius: 12px;
+      }
+      .leaflet-popup-tip {
+        background: #171717;
+      }
     </style>
-</head>
-<body>
-
-    <div class="app-container">
-
-        <!-- TELA 1: MAPA / SOLICITAÇÃO DE CORRIDAS -->
-        <div id="screen-map" class="screen active" style="padding:0;">
-            <div class="top-bar">
-                <button class="menu-btn" onclick="switchScreen('screen-admin')">Menu</button>
-                <h2>W-DRIVER AMÉRICA LATINA<br><span style="font-size:9px; color:#aaa;">João Pessoa - PB</span></h2>
-                <div style="width:8px; height:8px; background:var(--primary); border-radius:50%;"></div>
-            </div>
-
-            <div id="map"></div>
-
-            <div class="bottom-panel">
-                <div style="font-size: 11px; color: var(--primary); margin-bottom: 6px; font-weight: bold;" id="selected-cat-title">W-MOTO Comum</div>
-                
-                <div class="category-grid">
-                    <button class="cat-btn" onclick="selectCategory('W-BIKE', 'R$ 6,00')">🚲<br><span>R$ 6,00</span></button>
-                    <button class="cat-btn active" id="btn-moto" onclick="selectCategory('W-MOTO', 'R$ 6,00')">🏍️<br><span>R$ 6,00</span></button>
-                    <button class="cat-btn" onclick="selectCategory('W-CARRO', 'R$ 8,00')">🚗<br><span>R$ 8,00</span></button>
-                    <button class="cat-btn" onclick="selectCategory('W-TÁXI', 'R$ 10,00')">🚕<br><span>R$ 10,00</span></button>
-                </div>
-
-                <button class="btn" id="btn-request" onclick="alert('Solicitação enviada para a central W-DRIVER!')">Solicitar W-MOTO Comum (R$ 6,00)</button>
-
-                <div class="nav-tabs">
-                    <button class="nav-tab" onclick="switchScreen('screen-bio')">📄 Biografia</button>
-                    <button class="nav-tab" onclick="switchScreen('screen-map')">📍 Mapa</button>
-                    <button class="nav-tab" onclick="switchScreen('screen-admin')">⚙️ Painel</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- TELA 2: BIOGRAFIA E CADASTRO -->
-        <div id="screen-bio" class="screen">
-            <div class="top-bar" style="margin: -15px -15px 15px -15px;">
-                <button class="menu-btn" onclick="switchScreen('screen-map')">← Voltar</button>
-                <h2>Biografia e Cadastro</h2>
-                <div style="width:30px;"></div>
-            </div>
-
-            <div class="bio-box">
-                <strong>A História por trás da W-DRIVER:</strong><br>
-                A história do W-DRIVER AMÉRICA LATINA BRASIL JOÃO PESSOA-PB nasceu na dor, no trânsito, na fé e no legado de uma família que ensinou o verdadeiro valor do trabalho e da honestidade.<br><br>
-                Registrada oficialmente na Rua José Severino Massa Spinelli, 836, Bairro da Torre, João Pessoa - PB. Fundada por Diego Wallace de Lima Vasconcelos, conectando passageiros e motoristas com rigor técnico, verificação de antecedentes e fotos sem acessórios desde 2009.
-            </div>
-
-            <div style="font-size: 12px; font-weight: bold; color: var(--primary); margin-bottom: 10px; text-transform: uppercase;">
-                Faça seu Cadastro / Envio de Foto
-            </div>
-
-            <div class="form-group">
-                <label>Nome Completo:</label>
-                <input type="text" class="form-control" value="Diego Wallace de Lima Vasconcelos">
-            </div>
-            <div class="form-group">
-                <label>CPF:</label>
-                <input type="text" class="form-control" value="05776280460">
-            </div>
-            <div class="form-group">
-                <label>Telefone / WhatsApp:</label>
-                <input type="text" class="form-control" value="83981179524">
-            </div>
-            <div class="form-group">
-                <label>Foto 3x4 (Rosto Limpo):</label>
-                <input type="file" class="form-control" style="padding:6px; font-size:11px;">
-            </div>
-
-            <button class="btn" onclick="alert('Cadastro enviado para análise!')">Enviar para Análise</button>
-            <button class="btn btn-secondary" onclick="switchScreen('screen-map')">Ir para o Mapa</button>
-        </div>
-
-        <!-- TELA 3: PAINEL ADMINISTRATIVO -->
-        <div id="screen-admin" class="screen">
-            <div class="top-bar" style="margin: -15px -15px 15px -15px;">
-                <button class="menu-btn" onclick="switchScreen('screen-map')">← Voltar</button>
-                <h2>Central de Comando (Admin)</h2>
-                <div style="width:30px;"></div>
-            </div>
-
-            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px; text-align:center;">
-                <div style="background:#151515; border:1px solid #333; padding:8px; border-radius:6px;">
-                    <span style="color:var(--primary); font-size:16px; font-weight:bold;">1</span><br><label style="font-size:9px; color:#aaa;">Cadastros</label>
-                </div>
-                <div style="background:#151515; border:1px solid #333; padding:8px; border-radius:6px;">
-                    <span style="color:var(--primary); font-size:16px; font-weight:bold;">1</span><br><label style="font-size:9px; color:#aaa;">Liberados</label>
-                </div>
-                <div style="background:#151515; border:1px solid #333; padding:8px; border-radius:6px;">
-                    <span style="color:var(--primary); font-size:16px; font-weight:bold;">0</span><br><label style="font-size:9px; color:#aaa;">Suspensos</label>
-                </div>
-            </div>
-
-            <div style="font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 6px; text-transform: uppercase;">
-                Gerenciamento de Cadastros
-            </div>
-            <div style="background:#151515; border:1px solid #333; padding:10px; border-radius:6px; font-size:11px; margin-bottom:15px;">
-                <strong>Diego Wallace de Lima Vasconcelos</strong><br>
-                CPF: 05776280460 | Tel: 83981179524<br>
-                Status: <span style="background:var(--primary); color:#000; padding:2px 6px; border-radius:4px; font-weight:bold;">APROVADO</span>
-                <div style="display:flex; gap:5px; margin-top:8px;">
-                    <button class="btn" style="margin:0; font-size:10px; padding:6px;">Permitir</button>
-                    <button class="btn" style="margin:0; font-size:10px; padding:6px; background:var(--warning);">Suspender</button>
-                    <button class="btn" style="margin:0; font-size:10px; padding:6px; background:var(--danger); color:#fff;">Excluir</button>
-                </div>
-            </div>
-
-            <button class="btn btn-secondary" onclick="switchScreen('screen-map')">Voltar ao Mapa Principal</button>
-        </div>
-
-    </div>
-
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        // Navegação entre telas
-        function switchScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-            
-            // Corrige a renderização do mapa se voltar para ele
-            if(screenId === 'screen-map' && window.mapInstance) {
-                setTimeout(() => { window.mapInstance.invalidateSize(); }, 100);
-            }
-        }
-
-        // Seleção de Categoria
-        function selectCategory(name, price) {
-            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            document.getElementById('selected-cat-title').innerText = name + " Comum";
-            document.getElementById('btn-request').innerText = "Solicitar " + name + " Comum (" + price + ")";
-        }
-
-        // Inicialização do Mapa em João Pessoa - PB
-        window.addEventListener('DOMContentLoaded', () => {
-            const map = L.map('map').setView([-7.1195, -34.8450], 14);
-            window.mapInstance = map;
-
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap & CartoDB',
-                maxZoom: 19
-            }).addTo(map);
-
-            L.marker([-7.1195, -34.8450]).addTo(map)
-                .bindPopup('<b>W-DRIVER</b><br>João Pessoa - PB')
-                .openPopup();
-        });
-    </script>
-</body>
+  </head>
+  <body class="bg-[#0a0a0a] text-neutral-100 antialiased selection:bg-lime-400 selection:text-black">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
