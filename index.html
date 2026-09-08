@@ -18,21 +18,39 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Leaflet CSS (OpenStreetMap gratuito) -->
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              lime: { 400: '#a3e635', 500: '#84cc16' }
+            }
+          }
+        }
+      }
+    </script>
     <style>
-      html, body, #root {
-        width: 100vw;
-        height: 100vh;
+      html, body {
+        width: 100%;
+        height: 100%;
         margin: 0;
         padding: 0;
-        overflow: hidden;
-        position: fixed;
         background-color: #0a0a0a;
+        color: #f5f5f5;
+        font-family: 'Plus Jakarta Sans', sans-serif;
       }
-      /* Custom map marker styles */
-      .leaflet-container {
-        font-family: inherit;
+      #map {
+        width: 100%;
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
       }
       .leaflet-popup-content-wrapper {
         background: #171717;
@@ -45,8 +63,106 @@
       }
     </style>
   </head>
-  <body class="bg-[#0a0a0a] text-neutral-100 antialiased selection:bg-lime-400 selection:text-black">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body class="bg-[#0a0a0a] text-neutral-100 antialiased selection:bg-lime-400 selection:text-black overflow-x-hidden">
+
+    <!-- Mapa Leaflet de Fundo -->
+    <div id="map"></div>
+
+    <!-- Interface Superior / Cabeçalho -->
+    <div class="relative z-10 flex flex-col justify-between h-screen pointer-events-none p-4 md:p-6">
+      
+      <!-- Topo: Logo e Status W-DRIVER -->
+      <header class="flex items-center justify-between bg-neutral-900/90 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl pointer-events-auto shadow-2xl">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-neutral-950 border-2 border-lime-500 flex items-center justify-center shadow-lg shadow-lime-500/20">
+            <span class="text-lime-400 font-extrabold text-xl font-['Space_Grotesk']">W</span>
+          </div>
+          <div>
+            <h1 class="font-extrabold text-lg tracking-wider text-white font-['Space_Grotesk']">W-DRIVER</h1>
+            <p class="text-xs text-lime-400 font-medium">João Pessoa - PB • Sistema Blindado</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="relative flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-lime-500"></span>
+          </span>
+          <span class="text-xs font-semibold text-neutral-300 hidden sm:inline">Radar Ativo</span>
+        </div>
+      </header>
+
+      <!-- Painel Inferior de Solicitação de Corrida / Módulos -->
+      <div class="bg-neutral-900/95 backdrop-blur-xl border border-neutral-800 p-5 rounded-3xl pointer-events-auto shadow-2xl max-w-lg mx-auto w-full space-y-4">
+        
+        <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+          <div>
+            <h2 class="font-bold text-base text-white">Escolha sua Categoria</h2>
+            <p class="text-xs text-neutral-400">Proteção biométrica e anti-calote ativada</p>
+          </div>
+          <span class="px-2.5 py-1 bg-lime-500/10 border border-lime-500/30 text-lime-400 text-xs font-bold rounded-full">Secure 360°</span>
+        </div>
+
+        <!-- Opções de Serviços W -->
+        <div class="grid grid-cols-4 gap-2 text-center">
+          <button class="p-3 rounded-2xl bg-lime-500 text-neutral-950 font-bold flex flex-col items-center justify-center space-y-1 shadow-lg shadow-lime-500/20 transition-transform active:scale-95">
+            <span class="text-lg">🚗</span>
+            <span class="text-[11px] tracking-tight">W-CAR</span>
+          </button>
+          <button class="p-3 rounded-2xl bg-neutral-800 text-neutral-200 font-medium flex flex-col items-center justify-center space-y-1 hover:bg-neutral-700 transition">
+            <span class="text-lg">🏍️</span>
+            <span class="text-[11px] tracking-tight">W-MOTO</span>
+          </button>
+          <button class="p-3 rounded-2xl bg-neutral-800 text-neutral-200 font-medium flex flex-col items-center justify-center space-y-1 hover:bg-neutral-700 transition">
+            <span class="text-lg">🚲</span>
+            <span class="text-[11px] tracking-tight">W-BIKE</span>
+          </button>
+          <button class="p-3 rounded-2xl bg-neutral-800 text-neutral-200 font-medium flex flex-col items-center justify-center space-y-1 hover:bg-neutral-700 transition">
+            <span class="text-lg">🚕</span>
+            <span class="text-[11px] tracking-tight">W-TAXI</span>
+          </button>
+        </div>
+
+        <!-- Botão Principal de Ação -->
+        <button onclick="alert('W-DRIVER: Conectando aos motoristas blindados mais próximos em João Pessoa - PB.')" class="w-full py-4 bg-gradient-to-r from-lime-500 to-lime-400 text-neutral-950 font-extrabold rounded-2xl shadow-xl shadow-lime-500/30 hover:opacity-95 transition active:scale-95 text-center text-sm uppercase tracking-wider">
+          Solicitar W-Driver Blindado
+        </button>
+
+        <!-- Rodapé do Card -->
+        <div class="flex items-center justify-between text-[11px] text-neutral-400 pt-1">
+          <span>🔒 Validação Gov.br</span>
+          <span>🛡️ W-SOS Ativo</span>
+          <span>💳 W-BANK</span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+      // Inicializar mapa centralizado em João Pessoa - PB
+      const map = L.map('map', {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([-7.1195, -34.8450], 14);
+
+      // Adicionar camada de mapa escuro (CartoDB Dark Matter)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19
+      }).addTo(map);
+
+      // Adicionar marcador customizado em João Pessoa
+      const customIcon = L.divIcon({
+        className: 'custom-div-icon',
+        html: "<div style='background-color:#84cc16; width:16px; height:16px; border-radius:50%; border:3px solid #000; box-shadow: 0 0 15px #84cc16;'></div>",
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
+      });
+
+      L.marker([-7.1195, -34.8450], { icon: customIcon }).addTo(map)
+        .bindPopup("<b>W-DRIVER Base João Pessoa</b><br>Frota Blindada em Operação.")
+        .openPopup();
+    </script>
   </body>
 </html>
