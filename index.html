@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>W-DRIVER — Sistema Completo</title>
+    <!-- Leaflet CSS para o Mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         :root {
             --bg-color: #121212;
@@ -26,7 +28,6 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            padding: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -36,90 +37,138 @@
         .app-container {
             width: 100%;
             max-width: 480px;
+            height: 100vh;
+            max-height: 850px;
             background: var(--card-bg);
             border: 2px solid var(--primary);
             border-radius: 12px;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             box-shadow: 0 0 15px rgba(163, 255, 51, 0.2);
         }
 
         .screen {
             display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
         }
 
         .screen.active {
-            display: block;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Header Padrão */
-        .header-brand {
-            text-align: center;
-            margin-bottom: 20px;
+        /* Top Bar / Header */
+        .top-bar {
+            background: #181818;
+            padding: 12px;
             border-bottom: 1px solid #333;
-            padding-bottom: 15px;
-        }
-
-        .header-brand h1 {
-            color: var(--primary);
-            font-size: 24px;
-            letter-spacing: 1px;
-        }
-
-        .header-brand p {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 5px;
-            text-transform: uppercase;
-        }
-
-        /* Tela Inicial */
-        .welcome-screen {
-            text-align: center;
-            padding: 30px 0;
-        }
-
-        .logo-icon {
-            width: 80px;
-            height: 80px;
-            border: 2px solid var(--primary);
-            border-radius: 50%;
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 36px;
-            color: var(--primary);
-            box-shadow: 0 0 10px rgba(163, 255, 51, 0.3);
+            justify-content: space-between;
         }
 
-        .slogan-box {
-            border: 1px dashed var(--primary);
+        .top-bar h2 {
+            color: var(--primary);
+            font-size: 14px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .menu-btn {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        /* Mapa */
+        #map {
+            flex: 1;
+            width: 100%;
+            min-height: 350px;
+        }
+
+        /* Rodapé de Categorias / Ações */
+        .bottom-panel {
+            background: #181818;
+            border-top: 1px solid #333;
             padding: 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            margin-bottom: 25px;
-            color: var(--primary);
-            line-height: 1.4;
         }
 
-        /* Botões */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .cat-btn {
+            background: #252525;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 8px 4px;
+            text-align: center;
+            color: #fff;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .cat-btn.active {
+            border-color: var(--primary);
+            background: rgba(163, 255, 51, 0.15);
+            color: var(--primary);
+        }
+
+        .cat-btn span {
+            display: block;
+            font-weight: bold;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        /* Navegação Inferior (Abas) */
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            background: #111;
+            padding: 8px 4px;
+            border-top: 1px solid #222;
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 10px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Botões Gerais */
         .btn {
             width: 100%;
             background-color: var(--primary);
             color: #000;
             border: none;
-            padding: 14px;
+            padding: 12px;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             text-transform: uppercase;
-            transition: background 0.2s;
             margin-bottom: 10px;
-        }
-
-        .btn:hover {
-            background-color: var(--primary-hover);
         }
 
         .btn-secondary {
@@ -127,21 +176,28 @@
             color: var(--text-color);
         }
 
-        .btn-secondary:hover {
-            background-color: #444;
+        .form-group {
+            margin-bottom: 12px;
         }
 
-        .btn-danger {
-            background-color: var(--danger);
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 6px;
             color: #fff;
+            font-size: 13px;
         }
 
-        .btn-warning {
-            background-color: var(--warning);
-            color: #000;
-        }
-
-        /* Biografia e Textos */
         .bio-box {
             background: #151515;
             border: 1px solid #333;
@@ -149,103 +205,10 @@
             border-radius: 8px;
             font-size: 12px;
             line-height: 1.5;
-            margin-bottom: 20px;
-            max-height: 200px;
-            overflow-y: auto;
+            margin-bottom: 15px;
             color: #ddd;
-        }
-
-        /* Formulários */
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 11px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 14px;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            outline: none;
-        }
-
-        /* Painel Admin / Estatísticas */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .stat-card {
-            background: #121212;
-            border: 1px solid #333;
-            padding: 10px;
-            border-radius: 6px;
-        }
-
-        .stat-card span {
-            display: block;
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .stat-card label {
-            font-size: 9px;
-            color: var(--text-muted);
-        }
-
-        .user-card {
-            background: #151515;
-            border: 1px solid #333;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .user-info {
-            font-size: 12px;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: bold;
-            background: var(--warning);
-            color: #000;
-        }
-
-        .badge.approved {
-            background: var(--primary);
-        }
-
-        /* Categorias */
-        .checkbox-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 12px;
-            margin-top: 5px;
+            max-height: 180px;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -253,145 +216,152 @@
 
     <div class="app-container">
 
-        <!-- TELA 1: INÍCIO / BOAS-VINDAS -->
-        <div id="screen-welcome" class="screen active">
-            <div class="header-brand">
-                <h1>W-DRIVER</h1>
-                <p>América Latina Brasil João Pessoa - PB</p>
+        <!-- TELA 1: MAPA / SOLICITAÇÃO DE CORRIDAS -->
+        <div id="screen-map" class="screen active" style="padding:0;">
+            <div class="top-bar">
+                <button class="menu-btn" onclick="switchScreen('screen-admin')">Menu</button>
+                <h2>W-DRIVER AMÉRICA LATINA<br><span style="font-size:9px; color:#aaa;">João Pessoa - PB</span></h2>
+                <div style="width:8px; height:8px; background:var(--primary); border-radius:50%;"></div>
             </div>
-            <div class="welcome-screen">
-                <div class="logo-icon">W</div>
-                <div class="slogan-box">
-                    "Quem escolhe preço corre riscos, quem escolhe a W-DRIVER escolhe chegar bem!"
+
+            <div id="map"></div>
+
+            <div class="bottom-panel">
+                <div style="font-size: 11px; color: var(--primary); margin-bottom: 6px; font-weight: bold;" id="selected-cat-title">W-MOTO Comum</div>
+                
+                <div class="category-grid">
+                    <button class="cat-btn" onclick="selectCategory('W-BIKE', 'R$ 6,00')">🚲<br><span>R$ 6,00</span></button>
+                    <button class="cat-btn active" id="btn-moto" onclick="selectCategory('W-MOTO', 'R$ 6,00')">🏍️<br><span>R$ 6,00</span></button>
+                    <button class="cat-btn" onclick="selectCategory('W-CARRO', 'R$ 8,00')">🚗<br><span>R$ 8,00</span></button>
+                    <button class="cat-btn" onclick="selectCategory('W-TÁXI', 'R$ 10,00')">🚕<br><span>R$ 10,00</span></button>
                 </div>
-                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 20px;">
-                    Indicamos motoristas e passageiros em segurança desde 2009
-                </p>
-                <button class="btn" onclick="switchScreen('screen-bio')">Acessar Biografia e Cadastro</button>
+
+                <button class="btn" id="btn-request" onclick="alert('Solicitação enviada para a central W-DRIVER!')">Solicitar W-MOTO Comum (R$ 6,00)</button>
+
+                <div class="nav-tabs">
+                    <button class="nav-tab" onclick="switchScreen('screen-bio')">📄 Biografia</button>
+                    <button class="nav-tab" onclick="switchScreen('screen-map')">📍 Mapa</button>
+                    <button class="nav-tab" onclick="switchScreen('screen-admin')">⚙️ Painel</button>
+                </div>
             </div>
         </div>
 
         <!-- TELA 2: BIOGRAFIA E CADASTRO -->
         <div id="screen-bio" class="screen">
-            <div class="header-brand">
-                <h1>W-DRIVER</h1>
-                <p>Biografia Oficial e Cadastro</p>
-            </div>
-            
-            <div class="bio-box">
-                <strong>A História por trás da W-DRIVER:</strong><br>
-                Da Dor da Rejeição à Liderança com Propósito: A história do W-DRIVER AMÉRICA LATINA BRASIL JOÃO PESSOA-PB não nasceu em um escritório de tecnologia ou em um berço de ouro. Ela começou na dor, no trânsito, na fé e no legado de uma família que ensinou o verdadeiro valor do trabalho, da honestidade e do amor.<br><br>
-                Natural de João Pessoa, Paraíba, nascido e criado no Bairro da Torre – na Rua José Severino Massa Spinelli, 836, local onde a empresa está oficialmente registrada –, Wallace traz no DNA a essência de sua terra. Nascido em 29 de novembro de 1985, a marca carrega a assinatura de seu criador: o "W" vem de Wallace (pronunciado Wollace ou Uóllace, como sua mãe carinhosamente ensinou), e "Driver" significa motorista. W-DRIVER traz o significado orgulhoso de "Wallace Motorista".<br><br>
-                Em 2009, ao tirar a CNH com Atividade Remunerada (EAR), Wallace viveu as dores da categoria... Casado há mais de duas décadas com a Missionária Gilmara Vasconcelos, acolheu os dois primeiros filhos dela como seus e teve mais três, formando cinco filhos e já sendo avô de três netos. Tornou-se Pastor em 2012, transformando o passado em compromisso de amor familiar.
+            <div class="top-bar" style="margin: -15px -15px 15px -15px;">
+                <button class="menu-btn" onclick="switchScreen('screen-map')">← Voltar</button>
+                <h2>Biografia e Cadastro</h2>
+                <div style="width:30px;"></div>
             </div>
 
-            <div style="font-size: 13px; font-weight: bold; color: var(--primary); margin-bottom: 10px; text-transform: uppercase;">
+            <div class="bio-box">
+                <strong>A História por trás da W-DRIVER:</strong><br>
+                A história do W-DRIVER AMÉRICA LATINA BRASIL JOÃO PESSOA-PB nasceu na dor, no trânsito, na fé e no legado de uma família que ensinou o verdadeiro valor do trabalho e da honestidade.<br><br>
+                Registrada oficialmente na Rua José Severino Massa Spinelli, 836, Bairro da Torre, João Pessoa - PB. Fundada por Diego Wallace de Lima Vasconcelos, conectando passageiros e motoristas com rigor técnico, verificação de antecedentes e fotos sem acessórios desde 2009.
+            </div>
+
+            <div style="font-size: 12px; font-weight: bold; color: var(--primary); margin-bottom: 10px; text-transform: uppercase;">
                 Faça seu Cadastro / Envio de Foto
             </div>
 
             <div class="form-group">
                 <label>Nome Completo:</label>
-                <input type="text" id="reg-name" class="form-control" value="Diego Wallace de Lima Vasconcelos">
+                <input type="text" class="form-control" value="Diego Wallace de Lima Vasconcelos">
             </div>
             <div class="form-group">
                 <label>CPF:</label>
-                <input type="text" id="reg-cpf" class="form-control" value="05776280460">
+                <input type="text" class="form-control" value="05776280460">
             </div>
             <div class="form-group">
                 <label>Telefone / WhatsApp:</label>
-                <input type="text" id="reg-tel" class="form-control" value="83981179524">
+                <input type="text" class="form-control" value="83981179524">
             </div>
             <div class="form-group">
-                <label>Foto 3x4 (Rosto limpo / Sem óculos ou capacete):</label>
-                <input type="file" class="form-control" style="padding: 8px; font-size: 11px;">
+                <label>Foto 3x4 (Rosto Limpo):</label>
+                <input type="file" class="form-control" style="padding:6px; font-size:11px;">
             </div>
 
-            <button class="btn" onclick="alert('Cadastro enviado para análise com sucesso!'); switchScreen('screen-admin');">Enviar Cadastro para Análise</button>
-            <button class="btn btn-secondary" onclick="switchScreen('screen-welcome')">← Voltar ao Início</button>
-            <button class="btn btn-secondary" style="background:#222; color:var(--primary);" onclick="switchScreen('screen-admin')">Ir à Central (Admin)</button>
+            <button class="btn" onclick="alert('Cadastro enviado para análise!')">Enviar para Análise</button>
+            <button class="btn btn-secondary" onclick="switchScreen('screen-map')">Ir para o Mapa</button>
         </div>
 
-        <!-- TELA 3: CENTRAL DE COMANDO (ADMIN) -->
+        <!-- TELA 3: PAINEL ADMINISTRATIVO -->
         <div id="screen-admin" class="screen">
-            <div class="header-brand">
-                <h1>W-DRIVER</h1>
-                <p>América Latina Brasil João Pessoa-PB — Central de Comando</p>
+            <div class="top-bar" style="margin: -15px -15px 15px -15px;">
+                <button class="menu-btn" onclick="switchScreen('screen-map')">← Voltar</button>
+                <h2>Central de Comando (Admin)</h2>
+                <div style="width:30px;"></div>
             </div>
 
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span id="stat-total">1</span>
-                    <label>Cadastros</label>
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px; text-align:center;">
+                <div style="background:#151515; border:1px solid #333; padding:8px; border-radius:6px;">
+                    <span style="color:var(--primary); font-size:16px; font-weight:bold;">1</span><br><label style="font-size:9px; color:#aaa;">Cadastros</label>
                 </div>
-                <div class="stat-card">
-                    <span id="stat-liberated">1</span>
-                    <label>Liberados</label>
+                <div style="background:#151515; border:1px solid #333; padding:8px; border-radius:6px;">
+                    <span style="color:var(--primary); font-size:16px; font-weight:bold;">1</span><br><label style="font-size:9px; color:#aaa;">Liberados</label>
                 </div>
-                <div class="stat-card">
-                    <span id="stat-suspended">0</span>
-                    <label>Suspensos</label>
+                <div style="background:#151515; border:1px solid #333; padding:8px; border-radius:6px;">
+                    <span style="color:var(--primary); font-size:16px; font-weight:bold;">0</span><br><label style="font-size:9px; color:#aaa;">Suspensos</label>
                 </div>
             </div>
 
-            <div style="font-size: 12px; font-weight: bold; color: var(--primary); margin-bottom: 8px; text-transform: uppercase;">
-                Gerenciamento de Cadastros e Fotos
+            <div style="font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 6px; text-transform: uppercase;">
+                Gerenciamento de Cadastros
             </div>
-
-            <div class="user-card">
-                <div class="user-info">
-                    <strong>Nome:</strong> Diego Wallace de Lima Vasconcelos<br>
-                    <strong>CPF/Tel:</strong> 05776280460 | 83981179524<br>
-                    <strong>Status:</strong> <span class="badge approved">APROVADO</span>
-                </div>
-                <button class="btn btn-secondary" style="font-size: 10px; padding: 6px; margin-bottom: 8px;">Enviar Foto</button>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
-                    <button class="btn" style="margin:0; font-size: 10px; padding: 8px;">Permitir</button>
-                    <button class="btn btn-warning" style="margin:0; font-size: 10px; padding: 8px;">Suspender</button>
-                    <button class="btn btn-danger" style="margin:0; font-size: 10px; padding: 8px;">Excluir</button>
+            <div style="background:#151515; border:1px solid #333; padding:10px; border-radius:6px; font-size:11px; margin-bottom:15px;">
+                <strong>Diego Wallace de Lima Vasconcelos</strong><br>
+                CPF: 05776280460 | Tel: 83981179524<br>
+                Status: <span style="background:var(--primary); color:#000; padding:2px 6px; border-radius:4px; font-weight:bold;">APROVADO</span>
+                <div style="display:flex; gap:5px; margin-top:8px;">
+                    <button class="btn" style="margin:0; font-size:10px; padding:6px;">Permitir</button>
+                    <button class="btn" style="margin:0; font-size:10px; padding:6px; background:var(--warning);">Suspender</button>
+                    <button class="btn" style="margin:0; font-size:10px; padding:6px; background:var(--danger); color:#fff;">Excluir</button>
                 </div>
             </div>
 
-            <div style="font-size: 12px; font-weight: bold; color: var(--primary); margin: 15px 0 8px; text-transform: uppercase;">
-                Adicionar Usuário / Motorista Manualmente
-            </div>
-            <div class="form-group">
-                <label>Nome Completo:</label>
-                <input type="text" placeholder="Nome do motorista ou passageiro" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>CPF:</label>
-                <input type="text" placeholder="000.000.000-00" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Telefone / WhatsApp:</label>
-                <input type="text" placeholder="(83) 90000-0000" class="form-control">
-            </div>
-            <button class="btn">Adicionar e Permitir Acesso</button>
-
-            <div style="font-size: 12px; font-weight: bold; color: var(--primary); margin: 20px 0 8px; text-transform: uppercase;">
-                Controle de Tarifas e Região
-            </div>
-            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 5px;">Categorias Ativas (João Pessoa - PB):</div>
-            <div class="checkbox-grid">
-                <label><input type="checkbox" checked> W-BIKE</label>
-                <label><input type="checkbox" checked> W-MOTO</label>
-                <label><input type="checkbox" checked> W-CARRO</label>
-                <label><input type="checkbox" checked> W-TÁXI</label>
-            </div>
-
-            <button class="btn btn-secondary" style="margin-top: 20px;" onclick="switchScreen('screen-welcome')">← Voltar ao Início</button>
+            <button class="btn btn-secondary" onclick="switchScreen('screen-map')">Voltar ao Mapa Principal</button>
         </div>
 
     </div>
 
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // Navegação entre telas
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
             });
             document.getElementById(screenId).classList.add('active');
-            window.scrollTo(0, 0);
+            
+            // Corrige a renderização do mapa se voltar para ele
+            if(screenId === 'screen-map' && window.mapInstance) {
+                setTimeout(() => { window.mapInstance.invalidateSize(); }, 100);
+            }
         }
+
+        // Seleção de Categoria
+        function selectCategory(name, price) {
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById('selected-cat-title').innerText = name + " Comum";
+            document.getElementById('btn-request').innerText = "Solicitar " + name + " Comum (" + price + ")";
+        }
+
+        // Inicialização do Mapa em João Pessoa - PB
+        window.addEventListener('DOMContentLoaded', () => {
+            const map = L.map('map').setView([-7.1195, -34.8450], 14);
+            window.mapInstance = map;
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap & CartoDB',
+                maxZoom: 19
+            }).addTo(map);
+
+            L.marker([-7.1195, -34.8450]).addTo(map)
+                .bindPopup('<b>W-DRIVER</b><br>João Pessoa - PB')
+                .openPopup();
+        });
     </script>
 </body>
 </html>
